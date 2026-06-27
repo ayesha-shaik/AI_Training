@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Flashcards — Where I Am Now</title>
+<style>
+  :root{
+    --bg:#0a0e1a; --card:#151b30; --card2:#1d2742;
+    --accent:#6c8cff; --accent2:#00d9ff; --good:#22c98a; --wait:#ffb454; --pink:#ff6cae;
+    --text:#e6ecff; --muted:#8a94b8; --line:#2a3354;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text);
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:30px 16px;}
+  body::before{content:""; position:fixed; inset:0; z-index:-1; opacity:.35;
+    background:radial-gradient(circle at 25% 15%,#1c2952 0,transparent 40%),
+               radial-gradient(circle at 75% 70%,#3a1c4a 0,transparent 40%);
+    animation:drift 16s ease-in-out infinite alternate;}
+  @keyframes drift{to{transform:scale(1.15) translateY(-20px);}}
+
+  h1{font-size:2rem; text-align:center;
+    background:linear-gradient(90deg,var(--accent),var(--accent2),var(--pink));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .sub{color:var(--muted); text-align:center; margin:6px 0 22px;}
+
+  .cats{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:22px;}
+  .cat{cursor:pointer; padding:7px 15px; border-radius:30px; border:1px solid var(--line);
+    background:var(--card); color:var(--muted); font-size:.82rem; transition:.25s;}
+  .cat:hover{transform:translateY(-2px); border-color:var(--accent);}
+  .cat.active{background:var(--accent); color:#fff; border-color:var(--accent);}
+
+  .counter{color:var(--muted); font-size:.85rem; margin-bottom:14px;}
+
+  .stage{width:100%; max-width:540px;}
+  /* card turns via horizontal scale — content swaps at midpoint, so NO text mirroring */
+  .card{position:relative; width:100%; min-height:320px; cursor:pointer; border-radius:22px;
+    padding:40px 30px; display:flex; flex-direction:column; justify-content:center;
+    border:1px solid var(--line); box-shadow:0 18px 50px rgba(0,0,0,.55);
+    background:linear-gradient(160deg,var(--card),var(--card2));
+    transition:transform .28s ease, background .28s ease;
+    animation:pop .4s ease both;}
+  .card.turning{transform:scaleX(.02);}
+  .card.is-answer{background:linear-gradient(160deg,#16243a,#102a2a);}
+  @keyframes pop{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+
+  .tag{position:absolute; top:16px; left:20px; font-size:.7rem; padding:4px 12px;
+    border-radius:20px; background:rgba(108,140,255,.18); color:var(--accent2); font-weight:600;}
+  .qmark{position:absolute; top:16px; right:20px; font-size:.75rem; color:var(--muted);}
+  .a-label{font-size:.72rem; color:var(--good); text-transform:uppercase; letter-spacing:1px;
+    margin-bottom:14px; text-align:center; display:none;}
+  .card.is-answer .a-label{display:block;}
+  .content{font-size:1.35rem; font-weight:600; text-align:center; line-height:1.45;}
+  .card.is-answer .content{font-size:1.05rem; font-weight:500; line-height:1.65;}
+  .content code{background:rgba(0,217,255,.14); padding:2px 7px; border-radius:6px; color:var(--accent2); font-size:.95em;}
+  .hint{text-align:center; color:var(--muted); font-size:.78rem; margin-top:22px;}
+  .card.is-answer .hint{color:var(--good);}
+
+  .nav{display:flex; gap:14px; align-items:center; margin-top:26px;}
+  .btn{cursor:pointer; padding:12px 26px; border-radius:30px; border:none; font-size:.95rem;
+    font-weight:600; background:var(--card2); color:var(--text); transition:.2s;}
+  .btn:hover{transform:translateY(-2px); background:var(--accent); color:#fff;}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#fff;}
+  .dots{display:flex; gap:6px; margin-top:18px; flex-wrap:wrap; justify-content:center; max-width:400px;}
+  .dot{width:9px; height:9px; border-radius:50%; background:var(--line); transition:.25s; cursor:pointer;}
+  .dot.active{background:var(--accent2); transform:scale(1.4); box-shadow:0 0 10px var(--accent2);}
+  .dot.known{background:var(--good);}
+  .done-msg{margin-top:18px; color:var(--good); font-size:.9rem; height:20px;}
+  footer{margin-top:30px; color:var(--muted); font-size:.8rem; text-align:center;}
+</style>
+</head>
+<body>
+
+<h1>ML Flashcards</h1>
+<p class="sub">Stats foundation + Linear Regression — where you are right now</p>
+
+<div class="cats" id="cats"></div>
+<div class="counter" id="counter"></div>
+
+<div class="stage">
+  <div class="card" id="card">
+    <span class="tag" id="tag"></span>
+    <span class="qmark" id="qmark"></span>
+    <div class="a-label">Answer</div>
+    <div class="content" id="content"></div>
+    <div class="hint" id="hint">tap card to flip ↻</div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="btn" id="prev">← Prev</button>
+  <button class="btn primary" id="know">I knew it ✓</button>
+  <button class="btn" id="next">Next →</button>
+</div>
+<div class="dots" id="dots"></div>
+<div class="done-msg" id="doneMsg"></div>
+
+<footer>Click card to flip • "I knew it" marks it green • ← → to navigate • Space to flip</footer>
+
+<script>
+const cards = [
+ {cat:"Stats", q:"What does the mean tell you, and what's its weakness?", a:"The average — sum ÷ count. Weakness: it's <b>pulled by outliers</b>. One huge value drags the mean away from the 'typical' value."},
+ {cat:"Stats", q:"Why does the breast-cancer notebook replace outliers with the MEDIAN, not the mean?", a:"The <b>median is robust to outliers</b> — it's just the middle value, unaffected by extreme numbers. Replacing with it keeps the data realistic."},
+ {cat:"Stats", q:"In 5, 6, 7, 8, 50 — what is the median?", a:"<b>7</b> — the middle value when sorted. Notice 50 doesn't affect it at all (that's robustness)."},
+ {cat:"Stats", q:"What does standard deviation measure?", a:"The <b>spread</b> of data around the mean. Small SD = values clustered tight; large SD = values spread wide."},
+ {cat:"Stats", q:"What is IQR and how do you compute it?", a:"Inter-Quartile Range = <code>Q3 − Q1</code>. It's the spread of the <b>middle 50%</b> of the data, ignoring extremes."},
+ {cat:"Stats", q:"What are the IQR outlier bounds?", a:"Lower = <code>Q1 − 1.5×IQR</code><br>Upper = <code>Q3 + 1.5×IQR</code><br>Anything outside these = outlier."},
+ {cat:"Stats", q:"For 5,6,7,8,50 with Q1=6, Q3=8 — find the outlier.", a:"IQR = 8−6 = 2. Upper bound = 8 + 1.5×2 = <b>11</b>. Lower = 6 − 3 = 3.<br><b>50 is the outlier</b> (way above 11)."},
+ {cat:"Stats", q:"What's a box plot used for?", a:"Visualizing the IQR method — the box = Q1→Q3, the line = median, and points beyond the whiskers = <b>outliers</b>."},
+
+ {cat:"Regression", q:"What is linear regression in one line?", a:"Fitting a <b>straight line</b> through data to predict a continuous number: <code>y = mx + b</code>."},
+ {cat:"Regression", q:"In y = mx + b, what do m and b mean?", a:"<b>m</b> = slope (how much y changes per unit x). <b>b</b> = intercept (value of y when x=0)."},
+ {cat:"Regression", q:"What does 'fitting' the line actually minimize?", a:"The total <b>squared error</b> — the sum of (predicted − actual)² across all points. Smaller = better fit."},
+ {cat:"Regression", q:"Difference between linear and logistic regression?", a:"Linear predicts a <b>number</b> (price, age). Logistic predicts a <b>probability / class</b> (yes/no, 0–1) using an S-curve (sigmoid)."},
+ {cat:"Regression", q:"What is gradient descent, intuitively?", a:"Like rolling downhill to the lowest error. You nudge <b>m and b</b> step by step in the direction that reduces error most."},
+
+ {cat:"Workflow", q:"What does train/test split prevent?", a:"<b>Overfitting illusion</b> — you train on one part, test on unseen data, so accuracy reflects real-world performance, not memorization."},
+ {cat:"Workflow", q:"Why scale features before training?", a:"So no feature <b>dominates by magnitude</b>. A feature in 1000s shouldn't outweigh one in 0–1 just because of units."},
+ {cat:"Workflow", q:"What is cross-validation?", a:"Splitting data into k folds, training k times each on a different fold-out. Gives a <b>more reliable accuracy</b> than a single split."},
+ {cat:"Workflow", q:"In Week 1, preprocessing raised accuracy 95.6% → 98.2%. How?", a:"By <b>replacing outliers with the median</b> (IQR method) + correlation heatmap to drop redundant features. Clean data → better model."},
+];
+
+let cat="All", idx=0, showingAnswer=false, known=new Set();
+const card=document.getElementById('card');
+
+function visible(){ return cat==="All"?cards:cards.filter(c=>c.cat===cat); }
+
+function paint(){
+  const list=visible();
+  if(idx>=list.length) idx=0;
+  const c=list[idx];
+  document.getElementById('tag').textContent = showingAnswer? "Answer" : c.cat;
+  document.getElementById('qmark').textContent=`${idx+1} / ${list.length}`;
+  document.getElementById('content').innerHTML = showingAnswer ? c.a : c.q;
+  document.getElementById('hint').textContent = showingAnswer ? "tap to see question ↻" : "tap card to flip ↻";
+  card.classList.toggle('is-answer', showingAnswer);
+  document.getElementById('counter').textContent=`${list.length} cards in "${cat}" • ${known.size} marked known`;
+  buildDots(list);
+}
+
+// turn = collapse horizontally, swap content at midpoint, expand back. No mirroring.
+function turn(){
+  card.classList.add('turning');
+  setTimeout(()=>{ showingAnswer=!showingAnswer; paint(); card.classList.remove('turning'); },280);
+}
+
+function goto(newIdx){
+  card.classList.add('turning');
+  setTimeout(()=>{ idx=newIdx; showingAnswer=false; paint(); card.classList.remove('turning'); },280);
+}
+
+function buildDots(list){
+  const d=document.getElementById('dots'); d.innerHTML='';
+  list.forEach((c,i)=>{
+    const dot=document.createElement('div');
+    dot.className='dot'+(i===idx?' active':'')+(known.has(c.q)?' known':'');
+    dot.onclick=()=>goto(i);
+    d.appendChild(dot);
+  });
+}
+
+card.onclick=turn;
+document.getElementById('next').onclick=()=>goto((idx+1)%visible().length);
+document.getElementById('prev').onclick=()=>goto((idx-1+visible().length)%visible().length);
+document.getElementById('know').onclick=()=>{
+  const c=visible()[idx]; known.add(c.q);
+  document.getElementById('doneMsg').textContent="✓ Marked known!";
+  setTimeout(()=>document.getElementById('doneMsg').textContent="",1200);
+  if(visible().length>1) goto((idx+1)%visible().length); else paint();
+};
+
+const catList=["All",...new Set(cards.map(c=>c.cat))];
+const catWrap=document.getElementById('cats');
+catList.forEach((cn,i)=>{
+  const el=document.createElement('div');
+  el.className='cat'+(i===0?' active':''); el.textContent=cn;
+  el.onclick=()=>{document.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active'); cat=cn; idx=0; showingAnswer=false; paint();};
+  catWrap.appendChild(el);
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')document.getElementById('next').click();
+  if(e.key==='ArrowLeft')document.getElementById('prev').click();
+  if(e.key===' '){e.preventDefault(); turn();}
+});
+
+paint();
+</script>
+</body>
+</html>

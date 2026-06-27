@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IIT KGP × upGrad — Applied AI & ML Journey</title>
+<style>
+  :root{
+    --bg:#0a0e1a; --panel:#121829; --panel2:#1a2138;
+    --accent:#6c8cff; --accent2:#00d9ff; --good:#22c98a; --wait:#ffb454;
+    --text:#e6ecff; --muted:#8a94b8; --line:#2a3354;
+    --m1:#6c8cff; --m2:#00d9ff; --m3:#b06cff; --m4:#ff6cae; --m5:#ffb454; --m6:#22c98a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text);
+    line-height:1.6; overflow-x:hidden;
+  }
+  /* animated gradient bg */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-1; opacity:.4;
+    background:radial-gradient(circle at 20% 10%, #1c2952 0%, transparent 40%),
+               radial-gradient(circle at 80% 60%, #2a1c52 0%, transparent 40%),
+               radial-gradient(circle at 50% 90%, #052a3a 0%, transparent 40%);
+    animation:drift 18s ease-in-out infinite alternate;
+  }
+  @keyframes drift{to{transform:scale(1.2) translateY(-30px);}}
+
+  header{
+    text-align:center; padding:60px 20px 30px;
+    animation:fadeDown .8s ease both;
+  }
+  header h1{font-size:2.4rem; letter-spacing:.5px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2),var(--m3));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+  header p{color:var(--muted); margin-top:8px; font-size:1.05rem;}
+
+  /* progress bar */
+  .progress-wrap{max-width:760px; margin:24px auto 0; padding:0 20px;}
+  .progress-track{height:14px; background:var(--panel2); border-radius:20px; overflow:hidden; border:1px solid var(--line);}
+  .progress-fill{height:100%; width:0; border-radius:20px;
+    background:linear-gradient(90deg,var(--good),var(--accent2));
+    transition:width 1.6s cubic-bezier(.22,1,.36,1); box-shadow:0 0 18px var(--accent2);}
+  .progress-label{text-align:center; color:var(--muted); margin-top:8px; font-size:.9rem;}
+
+  /* legend / filters */
+  .controls{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:30px auto; padding:0 20px;}
+  .chip{cursor:pointer; padding:8px 16px; border-radius:30px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:.85rem; transition:.25s; user-select:none;}
+  .chip:hover{transform:translateY(-2px); border-color:var(--accent);}
+  .chip.active{background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 4px 16px rgba(108,140,255,.4);}
+  .chip.done.active{background:var(--good); box-shadow:0 4px 16px rgba(34,201,138,.4);}
+  .chip.wait.active{background:var(--wait); color:#1a1a1a; box-shadow:0 4px 16px rgba(255,180,84,.4);}
+
+  /* timeline */
+  .timeline{max-width:1000px; margin:20px auto 80px; padding:0 20px; position:relative;}
+  .spine{position:absolute; left:50%; top:0; bottom:0; width:3px;
+    background:linear-gradient(var(--m1),var(--m2),var(--m3),var(--m4),var(--m5),var(--m6));
+    transform:translateX(-50%); border-radius:3px; opacity:.5;}
+
+  .module{margin:50px 0; position:relative;}
+  .module-head{text-align:center; margin-bottom:10px; position:relative; z-index:2;}
+  .module-badge{display:inline-block; padding:10px 26px; border-radius:40px; font-weight:700;
+    font-size:1.05rem; cursor:pointer; transition:.3s; border:2px solid transparent;}
+  .module-badge:hover{transform:scale(1.05);}
+  .module-sub{color:var(--muted); font-size:.85rem; margin-top:6px;}
+
+  .weeks{display:flex; flex-direction:column; gap:18px; margin-top:20px;}
+  .week{
+    width:46%; background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:16px 20px; position:relative; cursor:pointer; transition:.35s;
+    opacity:0; transform:translateY(30px);
+  }
+  .week.show{opacity:1; transform:translateY(0);}
+  .week:hover{transform:translateY(-4px) scale(1.02); box-shadow:0 12px 30px rgba(0,0,0,.5);}
+  .week.left{align-self:flex-start;}
+  .week.right{align-self:flex-end;}
+  /* connector dot */
+  .week::after{content:""; position:absolute; top:24px; width:16px; height:16px; border-radius:50%;
+    background:var(--accent); border:3px solid var(--bg); box-shadow:0 0 12px var(--accent);}
+  .week.left::after{right:-8%;}
+  .week.right::after{left:-8%;}
+
+  .week-top{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .week-date{font-weight:700; font-size:.95rem;}
+  .week-no{font-size:.72rem; color:var(--muted); background:var(--panel2); padding:3px 10px; border-radius:20px;}
+  .week-title{margin:8px 0; font-size:.92rem;}
+  .week-meta{display:flex; justify-content:space-between; align-items:center; font-size:.78rem; color:var(--muted);}
+  .status{font-size:.75rem; padding:3px 10px; border-radius:20px; font-weight:600;}
+  .status.done{background:rgba(34,201,138,.15); color:var(--good);}
+  .status.wait{background:rgba(255,180,84,.15); color:var(--wait);}
+  .status.none{background:rgba(138,148,184,.12); color:var(--muted);}
+
+  .prep{margin-top:10px; font-size:.8rem; color:var(--muted); max-height:0; overflow:hidden;
+    transition:max-height .4s ease, margin .4s ease; border-top:1px solid transparent;}
+  .week.open .prep{max-height:200px; margin-top:12px; padding-top:10px; border-top:1px solid var(--line);}
+
+  .week.hidden{display:none;}
+  .break{align-self:center; width:60%; text-align:center; background:var(--panel2);
+    border:1px dashed var(--line); color:var(--muted); font-size:.82rem; padding:8px; border-radius:12px;}
+  .break::after{display:none;}
+
+  footer{text-align:center; color:var(--muted); padding:40px 20px 60px; font-size:.85rem;}
+
+  @keyframes fadeDown{from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);}}
+
+  @media(max-width:680px){
+    .spine{left:20px;}
+    .week{width:calc(100% - 40px); align-self:flex-start !important; margin-left:40px;}
+    .week::after{left:-28px !important; right:auto !important;}
+    header h1{font-size:1.7rem;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Applied AI &amp; ML — My 8-Month Journey</h1>
+  <p>IIT Kharagpur × upGrad &nbsp;•&nbsp; June 2026 → January 2027</p>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+    <div class="progress-label" id="plabel">Calculating progress…</div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="chip active" data-filter="all">All Weeks</div>
+  <div class="chip done" data-filter="done">✅ Prep Done</div>
+  <div class="chip wait" data-filter="wait">⏳ Prep Pending</div>
+</div>
+
+<div class="timeline">
+  <div class="spine"></div>
+  <div id="modules"></div>
+</div>
+
+<footer>
+  Live sessions: Saturdays 10am–1pm IST &nbsp;•&nbsp; Final Exam: Jan 10, 2027<br>
+  Click any module to collapse • Click any week card to see prep details
+</footer>
+
+<script>
+const data = [
+ {m:"MODULE 1 — ML Fundamentals", sub:"Jun 20 – Jul 19 • 6 weeks", color:"--m1", weeks:[
+   {n:1,date:"Jun 20",title:"Data analysis, preprocessing, visualization, ML workflow, cross-validation, metrics",inst:"Mahesh Mohan",st:"done",prep:"✅ Done in class — this is the lecture you have"},
+   {n:2,date:"Jun 27",title:"Supervised learning: linear & logistic regression",inst:"Mahesh Mohan",st:"done",prep:"✅ ML prep Mod 1 (Linear Regression) + calculus/gradient basics"},
+   {n:3,date:"Jul 4",title:"Supervised learning: decision trees & SVM",inst:"Adway Mitra",st:"done",prep:"✅ ML prep Mod 7 (SVM: margins, kernels)"},
+   {n:4,date:"Jul 11",title:"Ensemble methods: bagging, random forests, boosting",inst:"Adway Mitra",st:"wait",prep:"⏳ Ensemble prep (added module-wise)"},
+   {n:5,date:"Jul 18",title:"Unsupervised: K-means clustering & PCA",inst:"Prabhat K Mishra",st:"wait",prep:"✅ K-Means done + ⏳ PCA prep"},
+   {n:6,date:"Jul 19",title:"Assignment & grading doubt-clearing",inst:"—",st:"none",prep:"Review + complete graded assignment"},
+ ]},
+ {m:"MODULE 2 — Deep Learning, CV & Deployment", sub:"Jul 25 – Aug 23 • 6 weeks", color:"--m2", weeks:[
+   {n:7,date:"Jul 25",title:"Feedforward neural networks & backpropagation",inst:"S Reddy Kota",st:"done",prep:"✅ Vectors & Matrices (M6) + ⏳ NN prep — KEY BRIDGE TOPIC"},
+   {n:8,date:"Aug 1",title:"Gradient-based optimizers & regularization",inst:"S Reddy Kota",st:"wait",prep:"⏳ Optimizer prep"},
+   {n:9,date:"Aug 8",title:"Convolutional neural networks (CNNs)",inst:"Somdyuti Paul",st:"wait",prep:"⏳ CNN prep"},
+   {n:10,date:"Aug 16",title:"Recurrent neural networks (RNNs)",inst:"Somdyuti Paul",st:"wait",prep:"⏳ RNN prep"},
+   {n:11,date:"Aug 22",title:"Transfer learning & deployment",inst:"Amlan Chakrabarti",st:"wait",prep:"⏳ Deployment prep"},
+   {n:12,date:"Aug 23",title:"Assignment & grading doubt-clearing",inst:"—",st:"none",prep:"Review + assignment"},
+ ]},
+ {m:"MODULE 3 — NLP, Transformers & Speech", sub:"Aug 29 – Sep 20 • 5 weeks", color:"--m3", weeks:[
+   {n:13,date:"Aug 29",title:"Text pre-processing & representation",inst:"Amlan Chakrabarti",st:"wait",prep:"⏳"},
+   {n:14,date:"Sep 5",title:"Attention mechanism & Transformer",inst:"Plaban Bhowmick",st:"wait",prep:"⏳"},
+   {n:15,date:"Sep 12",title:"Transformer variants (tokenization, encoder/decoder-only)",inst:"Plaban Bhowmick",st:"wait",prep:"⏳"},
+   {n:16,date:"Sep 19",title:"Speech/Audio: ASR, TTS, voice cloning",inst:"Plaban Bhowmick",st:"wait",prep:"⏳"},
+   {n:17,date:"Sep 20",title:"Exams — revise Modules 1–3",inst:"—",st:"none",prep:"Full revision"},
+ ]},
+ {m:"MODULE 4 — Generative AI & LLMs", sub:"Sep 26 – Nov 1 • 6 weeks", color:"--m4", weeks:[
+   {n:18,date:"Sep 26",title:"Foundations of Generative AI",inst:"Jiaul Paik",st:"wait",prep:"⏳"},
+   {n:19,date:"Oct 3",title:"LLM concepts, pre-training at scale, prompt engineering",inst:"Jiaul Paik",st:"wait",prep:"⏳"},
+   {n:20,date:"Oct 10",title:"LLM fine-tuning: PEFT, LoRA, QLoRA",inst:"Jiaul Paik",st:"wait",prep:"⏳"},
+   {n:0,date:"Oct 17",title:"Durga Saptami — break",inst:"",st:"break",prep:""},
+   {n:21,date:"Oct 24",title:"Multimodal AI: CLIP, vision/audio Transformers, fusion",inst:"Debaditya Roy",st:"wait",prep:"⏳"},
+   {n:22,date:"Oct 31",title:"LLM alignment & responsible AI: safety, red-teaming",inst:"Abhijnan Chakrabarti",st:"wait",prep:"⏳"},
+   {n:23,date:"Nov 1",title:"Assignment & grading doubt-clearing",inst:"—",st:"none",prep:"Review + assignment"},
+ ]},
+ {m:"MODULE 5 — RAG Systems & LangChain", sub:"Nov 21 – Dec 13 • 5 weeks", color:"--m5", weeks:[
+   {n:24,date:"Nov 21",title:"Foundations of RAG & vector search",inst:"Koustav Rudra",st:"wait",prep:"⏳"},
+   {n:25,date:"Nov 28",title:"LangChain & RAG orchestration",inst:"Koustav Rudra",st:"wait",prep:"⏳"},
+   {n:26,date:"Dec 5",title:"Advanced RAG techniques & system design",inst:"Pawan Goyal",st:"wait",prep:"⏳"},
+   {n:27,date:"Dec 12",title:"Evaluation, debugging & optimization",inst:"Pawan Goyal",st:"wait",prep:"⏳"},
+   {n:28,date:"Dec 13",title:"Assignment & grading doubt-clearing",inst:"—",st:"none",prep:"Review + assignment"},
+ ]},
+ {m:"MODULE 6 — Agentic AI, MLOps & Responsible AI", sub:"Dec 19 – Jan 10 • 4 weeks", color:"--m6", weeks:[
+   {n:29,date:"Dec 19",title:"Agentic AI: foundations, architectures, orchestration",inst:"Jiaul Paik",st:"wait",prep:"⏳"},
+   {n:30,date:"Dec 26",title:"Building, evaluating & deploying agentic AI systems",inst:"Jiaul Paik",st:"wait",prep:"⏳"},
+   {n:31,date:"Jan 2",title:"Operationalizing ML: MLOps, monitoring, CI/CD",inst:"Plaban K Bhowmick",st:"wait",prep:"⏳"},
+   {n:32,date:"Jan 9",title:"Responsible agentic AI & governance, guardrails, HITL",inst:"Plaban K Bhowmick",st:"wait",prep:"⏳"},
+   {n:0,date:"Jan 10",title:"🎓 Final Exam — full revision",inst:"",st:"break",prep:""},
+ ]},
+];
+
+const container = document.getElementById('modules');
+let totalWeeks=0, doneWeeks=0;
+
+data.forEach((mod,mi)=>{
+  const modEl = document.createElement('div');
+  modEl.className='module';
+  const head = document.createElement('div');
+  head.className='module-head';
+  head.innerHTML=`<div class="module-badge" style="background:var(${mod.color}); color:#0a0e1a;">${mod.m}</div>
+    <div class="module-sub">${mod.sub}</div>`;
+  const weeksEl = document.createElement('div');
+  weeksEl.className='weeks';
+
+  mod.weeks.forEach((w,wi)=>{
+    if(w.st==='break'){
+      const b=document.createElement('div');
+      b.className='week break';
+      b.innerHTML=`📅 ${w.date} — ${w.title}`;
+      weeksEl.appendChild(b);
+      return;
+    }
+    totalWeeks++;
+    if(w.st==='done') doneWeeks++;
+    const side = wi%2===0?'left':'right';
+    const el=document.createElement('div');
+    el.className=`week ${side}`;
+    el.dataset.status=w.st;
+    const stLabel = w.st==='done'?'✅ Prep done':w.st==='wait'?'⏳ Prep pending':'— Review only';
+    el.innerHTML=`
+      <div class="week-top">
+        <span class="week-date" style="color:var(${mod.color})">${w.date}</span>
+        <span class="week-no">Week ${w.n}</span>
+      </div>
+      <div class="week-title">${w.title}</div>
+      <div class="week-meta">
+        <span>👨‍🏫 ${w.inst}</span>
+        <span class="status ${w.st}">${stLabel}</span>
+      </div>
+      <div class="prep">📚 ${w.prep}</div>`;
+    el.addEventListener('click',()=>el.classList.toggle('open'));
+    el.style.setProperty('--accent', `var(${mod.color})`);
+    weeksEl.appendChild(el);
+  });
+
+  modEl.appendChild(head);
+  modEl.appendChild(weeksEl);
+  container.appendChild(modEl);
+
+  head.querySelector('.module-badge').addEventListener('click',()=>{
+    weeksEl.style.display = weeksEl.style.display==='none'?'flex':'none';
+  });
+});
+
+// scroll reveal
+const obs = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); obs.unobserve(e.target);} });
+},{threshold:.15});
+document.querySelectorAll('.week:not(.break)').forEach(w=>obs.observe(w));
+
+// progress
+setTimeout(()=>{
+  const pct = Math.round(doneWeeks/totalWeeks*100);
+  document.getElementById('pfill').style.width = pct+'%';
+  document.getElementById('plabel').textContent =
+    `${doneWeeks} of ${totalWeeks} sessions prepped — ${pct}% ready`;
+},400);
+
+// filters
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    const f=chip.dataset.filter;
+    document.querySelectorAll('.week:not(.break)').forEach(w=>{
+      w.classList.toggle('hidden', f!=='all' && w.dataset.status!==f);
+    });
+  });
+});
+</script>
+</body>
+</html>
