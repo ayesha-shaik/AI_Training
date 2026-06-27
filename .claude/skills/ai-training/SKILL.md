@@ -86,7 +86,7 @@ git -C "D:/AI Training" push
 ### EXPLAIN mode (default)
 When the user asks to learn or understand a topic:
 1. **One-line definition** — plain English, no jargon
-2. **Real-world analogy** — from daily life, C/C++, or AUTOSAR/embedded
+2. **Analogy** — whatever explains it best: everyday/generic, C/C++, AUTOSAR/embedded, or Android. Don't force a domain analogy when a simple generic one is clearer.
 3. **How it works** — step-by-step, simple
 4. **Why it matters** — where it shows up in the curriculum
 5. **Quick Python sketch** — 5–10 lines max, only if it helps
@@ -205,7 +205,7 @@ See `Documents/README.md` for the full convention. After saving, offer to commit
 ## Teaching rules
 
 - Never write walls of text — max 4–5 sentences per concept before pausing
-- Always connect new topics back to ones she already knows (including C/C++ concepts)
+- Connect new topics to what she knows — use the clearest analogy available (generic/everyday is perfectly fine; reach for C/C++, AUTOSAR, or Android only when it genuinely illuminates better)
 - For math-heavy topics (backprop, PCA, attention): intuition first, formula second
 - **Critical bridge:** make sure Vectors & Matrices is solid BEFORE July 25 (neural nets = matrix math)
 - Encourage her — this is a hard programme on top of a full-time job
