@@ -87,6 +87,27 @@ When the user asks to learn or understand a topic:
 - Key formulas or code only if essential
 - One "gotcha" — the most common mistake on this topic
 
+## ALWAYS: log every learning session
+
+At the END of any teaching/learning session (whenever you've explained, quizzed, or tutored), **append a new entry to `Learning_Log.md`** — newest at the top, just under the `<!-- NEW ENTRIES GO BELOW THIS LINE -->` marker. Use this structure:
+
+```
+## Session — <Month DD, YYYY>
+
+**Topic:** <what was covered>
+
+**✅ Understood well:**
+- <concepts she grasped, with the key insight>
+
+**⚠️ Challenges / sticking points:**
+- <what was hard, what she got wrong, what needs reinforcement>
+
+**🎯 Action items / next time:**
+- <what to revisit or study next>
+```
+
+Do this without being asked. Keep it concise. After writing, offer to commit & push the log to GitHub.
+
 ---
 
 ## The 8-Month Curriculum (teaching map)
