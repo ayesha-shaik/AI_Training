@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start cmd *)",
+      "Bash(git init *)",
+      "Bash(git -C \"D:\\\\AI Training\" status)",
+      "Bash(git -C \"D:\\\\AI Training\" add .claude/ IITKGP_Study_Schedule.md)",
+      "Bash(git -C \"D:\\\\AI Training\" commit -m \"Initial commit\")",
+      "Bash(git -C \"D:\\\\AI Training\" remote add origin https://github.com/ayesha-shaik/AI_Training.git)",
+      "Bash(git -C \"D:\\\\AI Training\" branch -M main)",
+      "Bash(git -C \"D:\\\\AI Training\" push -u origin main)"
+    ]
+  }
+}
