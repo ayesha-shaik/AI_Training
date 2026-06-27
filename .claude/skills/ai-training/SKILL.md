@@ -108,6 +108,20 @@ At the END of any teaching/learning session (whenever you've explained, quizzed,
 
 Do this without being asked. Keep it concise. After writing, offer to commit & push the log to GitHub.
 
+## ALWAYS: save prepared docs to the Documents/ folder
+
+Whenever you prepare a study document (notes, summary, cheat-sheet, practice set, quiz, flashcards), **save it inside `Documents/`** using this naming convention:
+
+```
+YYYY-MM-DD_<SessionName>_<DocType>.<ext>
+```
+
+- date prepared • topic in PascalCase • doc type (`Notes`/`Summary`/`CheatSheet`/`Practice`/`Quiz`/`Flashcards`) • `.md` or `.html`
+
+Examples: `2026-06-27_LinearRegression_Notes.md`, `2026-07-04_SVM_CheatSheet.md`
+
+See `Documents/README.md` for the full convention. After saving, offer to commit & push.
+
 ---
 
 ## The 8-Month Curriculum (teaching map)
